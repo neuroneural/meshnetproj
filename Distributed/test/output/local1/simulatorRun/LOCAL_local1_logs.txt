@@ -1,0 +1,16 @@
+[INPUT] 23:26:55 07/14/2023 
+  ->{'matrix_shape': [1, 5]}
+[CACHE] 23:26:55 07/14/2023 
+  ->{'PIPELINE:LOCAL': {'index': 0, 'iterations': {'PhaseLoadData': 0, 'PhaseSaveResult': 0}}, 'input_args': {'matrix_shape': [1, 5]}, 'num_workers': 2, 'LOCAL': True}
+  <-{'PIPELINE:LOCAL': {'index': 1, 'iterations': {'PhaseLoadData': 1, 'PhaseSaveResult': 0}}, 'input_args': {'matrix_shape': [1, 5]}, 'num_workers': 2, 'LOCAL': True, 'next_phase': 'PhaseSaveResult', 'PHASE:PhaseLoadData': True}
+[OUTPUT] 23:26:55 07/14/2023 
+  <-{'output': {'site_matrix': 'site_matrix.npy'}}
+
+[INPUT] 23:27:13 07/14/2023 
+  ->{'averaged_matrix': 'averaged_matrix.npy'}
+[CACHE] 23:27:13 07/14/2023 
+  ->{'PIPELINE:LOCAL': {'index': 1, 'iterations': {'PhaseLoadData': 1, 'PhaseSaveResult': 0}}, 'input_args': {'matrix_shape': [1, 5]}, 'num_workers': 2, 'LOCAL': True, 'next_phase': 'PhaseSaveResult', 'PHASE:PhaseLoadData': True}
+  <-{'PIPELINE:LOCAL': {'index': 1, 'iterations': {'PhaseLoadData': 1, 'PhaseSaveResult': 1}}, 'input_args': {'matrix_shape': [1, 5]}, 'num_workers': 2, 'LOCAL': True, 'next_phase': 'PhaseSaveResult', 'PHASE:PhaseLoadData': True, 'PHASE:PhaseSaveResult': True}
+[OUTPUT] 23:27:13 07/14/2023 
+  <-{'output': {}}
+
