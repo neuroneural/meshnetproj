@@ -1,2 +1,4 @@
-coinstac==0.3.3b0
-numpy
+torch
+torchvision
+numpy>=1.21.2
+coinstac~=0.3.0

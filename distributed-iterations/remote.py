@@ -1,3 +1,5 @@
+import os
+import json
 import numpy as np
 from ancillary import list_recursive
 
@@ -5,6 +7,8 @@ from ancillary import list_recursive
 def remote_1(args):
 
     input = args["input"]
+    with open(os.path.join(args["state"]["outputDirectory"]+ os.sep +'input.json'),'w')as fp:
+        json.dump(args, fp)
     temp = []
     for site in input:
         temp.append(input[site]["value"])
@@ -21,10 +25,10 @@ def remote_1(args):
     else:
         computation_output = {
         "output": {
-            'iteration':input[site]['iteration']+1,
-            'epochs':input[site]['epochs']+1,
-            'value':myval+1,
-            "computation_phase": 'remote_1'
+            'iteration':input[site]['iteration'],
+            'epochs':input[site]['epochs'],
+            'value':myval,
+            "computation_phase": 'remote_2'
             }, "success": True
             }
     return computation_output
