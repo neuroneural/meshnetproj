@@ -10,6 +10,10 @@ import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+from meshnet import enMesh_checkpoint
+from dataloader import DataLoaderClass
+from meshnet import trainer
+model = enMesh_checkpoint(1,3)
 
 
 def remove_file(file_path):
@@ -57,6 +61,7 @@ def local_1(args):
     input = args["input"]
     with open(os.path.join(args["state"]["outputDirectory"]+ os.sep +'input.json'),'w')as fp:
         json.dump(args, fp)
+    traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
     computation_output = {
         "output": {
             'iteration':input['iteration'],
@@ -71,7 +76,7 @@ def local_1(args):
 def local_2(args):
 
     input = args["input"]
-
+    traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
     computation_output = {
         "output": {
             'iteration':input['iteration'],
@@ -86,7 +91,7 @@ def local_2(args):
 def start(PARAM_DICT):
     PHASE_KEY = list(list_recursive(PARAM_DICT, "computation_phase"))
     if not PHASE_KEY:
-        download_url_contents('https://meshnet-pr-dataset.s3.amazonaws.com/data.zip',PARAM_DICT['state']['outputDirectory'],'data.zip')
+        download_url_contents('https://meshnet-pr-dataset.s3.amazonaws.com/data-20-1.zip',PARAM_DICT['state']['outputDirectory'],'data.zip')
         unzip_file(os.path.join(PARAM_DICT['state']['outputDirectory'],'data.zip'))
         remove_file(os.path.join(PARAM_DICT['state']['outputDirectory'],'data.zip'))
         PARAM_DICT['input'].update({'epochs':10})

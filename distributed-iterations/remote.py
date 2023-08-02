@@ -2,6 +2,7 @@ import os
 import json
 import numpy as np
 from ancillary import list_recursive
+import torch
 
 
 def remote_1(args):
@@ -12,13 +13,18 @@ def remote_1(args):
     temp = []
     for site in input:
         temp.append(input[site]["value"])
-    myval = np.mean(temp)
+
+    aggregated_gradients = []
+    for grad_list in zip(*temp):
+            aggregated_grad = torch.stack(grad_list).mean(dim=0)
+            aggregated_gradients.append(aggregated_grad)
+    
     if input[site]['epochs']>input[site]['iteration']:
       computation_output = {
         "output": {
             'iteration':input[site]['iteration']+1,
             'epochs':input[site]['epochs'],
-            'value':myval+1,
+            'value':aggregated_gradients,
             "computation_phase": 'remote_1'
             }
             }
@@ -27,7 +33,7 @@ def remote_1(args):
         "output": {
             'iteration':input[site]['iteration'],
             'epochs':input[site]['epochs'],
-            'value':myval,
+            'value':aggregated_gradients,
             "computation_phase": 'remote_2'
             }, "success": True
             }

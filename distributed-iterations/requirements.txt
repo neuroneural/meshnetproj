@@ -1,7 +1,8 @@
+nilearn
+numba
 torch
 torchvision
 requests
-nibabel
-nilearn
+pandas
 numpy>=1.21.2
 coinstac~=0.3.0
