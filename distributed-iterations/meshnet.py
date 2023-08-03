@@ -134,20 +134,19 @@ class enMesh_checkpoint(MeshNet):
 
 
 from torch.nn import functional as F
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("mps" if torch.cuda.is_available() else "cpu")
 class trainer:
-  def __init__(self,n_channels, n_classes, trainloader, valloader, subvol_shape, epoches,modelpth,lrate=0.0007):
+  def __init__(self,n_channels, n_classes, trainloader,  epoch,modelpth,lrate=0.0007):
     self.n_channels = n_channels  # Number of input channels
     self.n_classes = n_classes # Number of output classes
     self.model = enMesh_checkpoint(self.n_channels, self.n_classes).to(device, dtype=torch.float32)
     self.criterion = nn.CrossEntropyLoss()
     self.lrate = lrate
     self.trainloader = trainloader
-    self.valloader = valloader
-    self.subvol_shape = subvol_shape
-    self.epoches = epoches
+    self.epoch = epoch
     self.modelpth = modelpth
     self.optimizer = torch.optim.RMSprop(self.model.parameters(), lr=self.lrate)
+    self.epoch = str(epoch)
 
 
   def train(self):
@@ -157,13 +156,18 @@ class trainer:
             print('No valid pretained model.pth file mentioned')
         self.model.train()
         for images, labels in self.trainloader:
+          print(images.shape,labels.shape)
+          print(device)
           if 1 in torch.argmax(torch.squeeze(labels),0) or 2 in torch.argmax(torch.squeeze(labels),0):
             images = images.to(device, dtype=torch.float32)
             labels = labels.to(device, dtype=torch.float32)
             self.optimizer.zero_grad()
             outputs = self.model(images)
+            print('output :',outputs.shape)
             loss=self.criterion(outputs, labels)
+            print('loss ',loss)
             dice_scores = faster_dice(torch.argmax(torch.squeeze(outputs),0), torch.argmax(torch.squeeze(labels),0), labels=[0, 1, 2])  # Specify the labels to evaluate on
+            print('Dice ', dice_scores)
             loss = loss+ (1-dice_scores.mean().item())
             loss.backward()
         local_gradients = [param.grad.clone() for param in self.model.parameters()]
@@ -174,5 +178,5 @@ class trainer:
             for param, avg_grad in zip(self.model.parameters(), agg_grad):
                 if param.requires_grad:
                     param.grad = avg_grad
-    torch.save(self.model.state_dict(), path + os.sep +'model.pth')
+    torch.save(self.model.state_dict(), path + os.sep +'model.'+self.epoch+'pth')
     self.optimizer.step()

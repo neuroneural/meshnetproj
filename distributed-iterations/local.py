@@ -6,6 +6,7 @@ import numpy as np
 import torch
 import requests
 import nibabel as nib
+import time
 import torch.nn as nn
 import torch.optim as optim
 from torchvision import datasets, transforms
@@ -13,7 +14,7 @@ from torch.utils.data import DataLoader
 from meshnet import enMesh_checkpoint
 from dataloader import DataLoaderClass
 from meshnet import trainer
-model = enMesh_checkpoint(1,3)
+
 
 
 def remove_file(file_path):
@@ -34,21 +35,12 @@ def unzip_file(zip_file_path):
 
 def download_url_contents(url, folder_path, file_name):
     try:
-        # Send a request to the URL to get the contents
         response = requests.get(url)
-
-        # Check if the request was successful (status code 200)
         if response.status_code == 200:
-            # Create the folder if it doesn't exist
             os.makedirs(folder_path, exist_ok=True)
-
-            # Combine the folder path and file name to get the full file path
             file_path = os.path.join(folder_path, file_name)
-
-            # Save the contents to the file
             with open(file_path, 'wb') as file:
                 file.write(response.content)
-
             print(f"Download successful. File saved at: {file_path}")
         else:
             print(f"Failed to download. Status code: {response.status_code}")
@@ -62,6 +54,10 @@ def local_1(args):
     with open(os.path.join(args["state"]["outputDirectory"]+ os.sep +'input.json'),'w')as fp:
         json.dump(args, fp)
     traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
+    meshnet = trainer(1,3,traindata, input['iteration'],'',0.0007)
+    value = meshnet.train()
+    print(value)
+    print(traindata.dataset.tensors[0][0].shape)
     computation_output = {
         "output": {
             'iteration':input['iteration'],
@@ -77,6 +73,8 @@ def local_2(args):
 
     input = args["input"]
     traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
+    print(traindata.dataset.tensors[0][0].shape)
+
     computation_output = {
         "output": {
             'iteration':input['iteration'],
@@ -91,10 +89,12 @@ def local_2(args):
 def start(PARAM_DICT):
     PHASE_KEY = list(list_recursive(PARAM_DICT, "computation_phase"))
     if not PHASE_KEY:
-        download_url_contents('https://meshnet-pr-dataset.s3.amazonaws.com/data-20-1.zip',PARAM_DICT['state']['outputDirectory'],'data.zip')
-        unzip_file(os.path.join(PARAM_DICT['state']['outputDirectory'],'data.zip'))
-        remove_file(os.path.join(PARAM_DICT['state']['outputDirectory'],'data.zip'))
-        PARAM_DICT['input'].update({'epochs':10})
+        # download_url_contents('https://meshnet-pr-dataset.s3.amazonaws.com/data-20-1.zip',PARAM_DICT['state']['outputDirectory'],'data.zip')
+        # time.sleep(5)
+        # unzip_file(os.path.join(PARAM_DICT['state']['outputDirectory'],'data.zip'))
+        # time.sleep(5)
+        # remove_file(os.path.join(PARAM_DICT['state']['outputDirectory'],'data.zip'))
+        PARAM_DICT['input'].update({'epochs':9})
         return local_1(PARAM_DICT)
     elif 'remote_1' in PHASE_KEY:
         return local_2(PARAM_DICT)

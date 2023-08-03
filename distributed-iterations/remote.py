@@ -14,17 +14,17 @@ def remote_1(args):
     for site in input:
         temp.append(input[site]["value"])
 
-    aggregated_gradients = []
-    for grad_list in zip(*temp):
-            aggregated_grad = torch.stack(grad_list).mean(dim=0)
-            aggregated_gradients.append(aggregated_grad)
+    # aggregated_gradients = []
+    # for grad_list in zip(*temp):
+    #         aggregated_grad = torch.stack(grad_list).mean(dim=0)
+    #         aggregated_gradients.append(aggregated_grad)
     
     if input[site]['epochs']>input[site]['iteration']:
       computation_output = {
         "output": {
             'iteration':input[site]['iteration']+1,
             'epochs':input[site]['epochs'],
-            'value':aggregated_gradients,
+            'value':10,
             "computation_phase": 'remote_1'
             }
             }
@@ -33,7 +33,7 @@ def remote_1(args):
         "output": {
             'iteration':input[site]['iteration'],
             'epochs':input[site]['epochs'],
-            'value':aggregated_gradients,
+            'value':10,
             "computation_phase": 'remote_2'
             }, "success": True
             }
