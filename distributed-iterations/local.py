@@ -14,7 +14,7 @@ from torch.utils.data import DataLoader
 from meshnet import enMesh_checkpoint
 from dataloader import DataLoaderClass
 from meshnet import trainer
-
+meshnet = trainer(1,3,0.0007)
 
 
 def remove_file(file_path):
@@ -51,18 +51,20 @@ def download_url_contents(url, folder_path, file_name):
 def local_1(args):
 
     input = args["input"]
+    time.sleep(input["sleep"])
     with open(os.path.join(args["state"]["outputDirectory"]+ os.sep +'input.json'),'w')as fp:
         json.dump(args, fp)
     traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
-    meshnet = trainer(1,3,traindata, input['iteration'],'',0.0007)
-    value = meshnet.train()
+    value = meshnet.train(traindata,'')
     print(value)
+    print(type(value))
+    print(type(value[0]))
     print(traindata.dataset.tensors[0][0].shape)
     computation_output = {
         "output": {
             'iteration':input['iteration'],
             'epochs':input['epochs'],
-            'value':input['value'],
+            'value':value,#input['value'],
             "computation_phase": 'local_1'
         }
     }
@@ -72,8 +74,9 @@ def local_1(args):
 def local_2(args):
 
     input = args["input"]
-    traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
-    print(traindata.dataset.tensors[0][0].shape)
+    meshnet.optimize(input['value'],args["state"]["outputDirectory"],input['iteration'])
+    # traindata = DataLoaderClass(os.path.join(args["state"]["outputDirectory"]+ os.sep +'data'+os.sep+'dataset_train.csv'),1,1,args["state"]["outputDirectory"],input['iteration']).dataloader()
+    # print(traindata.dataset.tensors[0][0].shape)
 
     computation_output = {
         "output": {

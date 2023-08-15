@@ -1,0 +1,24 @@
+{
+  "meta": {
+    "name": "coinstac first example",
+    "id": "dist_comp",
+    "version": "v1.0.0",
+    "repository": "https:\/\/github.com\/trendscenter\/coinstac-first-example",
+    "description": "An example code to demonstrate coinstac's working",
+    "compspecVersion": 2
+  },
+  "computation": {
+    "type": "docker",
+    "dockerImage": "dist_comp",
+    "command": [
+      "python"
+    ],
+    "remote": {
+      "type": "docker",
+      "dockerImage": "dist_comp",
+      "command": [
+        "python"
+      ]
+    }
+  }
+}

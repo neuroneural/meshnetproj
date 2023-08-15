@@ -1,0 +1,59 @@
+[{
+    "iteration": {
+        "value": 0
+    },
+    "epochs": {
+        "value": 4
+    },
+    "value": {
+        "value": 20
+    },
+    "sleep": {
+        "value": 0
+    },
+    "datasetsize": {
+        "value": 10
+    },
+    "datsetiteration": {
+        "value": 0
+    },
+    "key":{
+        "value":"9f13e6b205cfb13890b0fb8db3064a006d7f509c"
+    },
+    "dataset":{
+        "value":"CIFAR10"
+    },
+    "architecture":{
+        "value":"CNN-Cifar-training"
+    }
+},
+{
+    "iteration": {
+        "value": 0
+    },
+    "epochs": {
+        "value": 4
+    },
+    "value": {
+        "value": 40
+    },
+    "sleep": {
+        "value": 600
+    },
+    "datasetsize": {
+        "value": 10
+    },
+    "datsetiteration": {
+        "value": 0
+    },
+    "key":{
+        "value":"9f13e6b205cfb13890b0fb8db3064a006d7f509c"
+    },
+    "dataset":{
+        "value":"CIFAR10"
+    },
+    "architecture":{
+        "value":"CNN-Cifar-training"
+    }
+}
+]

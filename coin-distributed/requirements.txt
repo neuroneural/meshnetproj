@@ -1,0 +1,9 @@
+nilearn
+numba
+wandb
+torch
+torchvision
+requests
+pandas
+numpy>=1.21.2
+coinstac~=0.3.0

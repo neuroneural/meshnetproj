@@ -136,26 +136,22 @@ class enMesh_checkpoint(MeshNet):
 from torch.nn import functional as F
 device = torch.device("mps" if torch.cuda.is_available() else "cpu")
 class trainer:
-  def __init__(self,n_channels, n_classes, trainloader,  epoch,modelpth,lrate=0.0007):
+  def __init__(self,n_channels, n_classes, lrate=0.0007):
     self.n_channels = n_channels  # Number of input channels
     self.n_classes = n_classes # Number of output classes
     self.model = enMesh_checkpoint(self.n_channels, self.n_classes).to(device, dtype=torch.float32)
     self.criterion = nn.CrossEntropyLoss()
     self.lrate = lrate
-    self.trainloader = trainloader
-    self.epoch = epoch
-    self.modelpth = modelpth
     self.optimizer = torch.optim.RMSprop(self.model.parameters(), lr=self.lrate)
-    self.epoch = str(epoch)
 
 
-  def train(self):
+  def train(self, trainloader,modelpth):
         try:
-            self.model.load_state_dict(torch.load(self.modelpth))
+            self.model.load_state_dict(torch.load(modelpth))
         except:
             print('No valid pretained model.pth file mentioned')
         self.model.train()
-        for images, labels in self.trainloader:
+        for images, labels in trainloader:
           print(images.shape,labels.shape)
           print(device)
           if 1 in torch.argmax(torch.squeeze(labels),0) or 2 in torch.argmax(torch.squeeze(labels),0):
@@ -173,10 +169,10 @@ class trainer:
         local_gradients = [param.grad.clone() for param in self.model.parameters()]
         return local_gradients
   
-  def optimize(self,agg_grad,path):
+  def optimize(self,agg_grad,path, epoch):
     with torch.no_grad():
             for param, avg_grad in zip(self.model.parameters(), agg_grad):
                 if param.requires_grad:
                     param.grad = avg_grad
-    torch.save(self.model.state_dict(), path + os.sep +'model.'+self.epoch+'pth')
+    torch.save(self.model.state_dict(), path + os.sep +'model.'+str(epoch)+'pth')
     self.optimizer.step()
