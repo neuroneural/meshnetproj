@@ -28,8 +28,11 @@ def local_1(args):
     loss, gradients =  trainer.train(images, labels)
     wandb.log('Dataset Batch '+str(input['datsetiteration'])+'  Loss',loss)
     logger.log_message(str(args['state']['clientId'])+" Epoch : "+str(input['iteration'])+" Dataset : "+str(input['datsetiteration'])+", Loss : "+str(loss), level=logging.INFO)
+    logger.log_message('Project_Urls :'+str(wandb.url.url), level=logging.INFO)
+    
     computation_output = {
         "output": {
+            'project_url':str(wandb.url.url),
             'iteration':input['iteration'],
             'epochs':input['epochs'],
             'value':1,#input['value'],
@@ -57,8 +60,10 @@ def local_2(args):
     loss, gradients =  trainer.train(images, labels)
     wandb.log('Dataset Batch '+str(input['datsetiteration'])+'  Loss',loss)
     logger.log_message(str(args['state']['clientId'])+" Epoch : "+str(input['iteration'])+", Dataset : "+str(input['datsetiteration'])+", Loss : "+str(loss), level=logging.INFO)
+    logger.log_message('Project_Urls :'+str(input['PROJECT_URL']), level=logging.INFO)
     computation_output = {
         "output": {
+            'project_url':str(wandb.url.url),
             'iteration':input['iteration'],
             'epochs':input['epochs'],
             'value':input['value'],
@@ -79,7 +84,7 @@ def start(PARAM_DICT):
         train, val, test = get_loaders(PARAM_DICT['state']['outputDirectory'])
         loader.data =  train
         loader.val = val
-        PARAM_DICT['input'].update({'epochs':5,'datasetsize':len(train)})#len(train)})
+        PARAM_DICT['input'].update({'epochs':4,'datasetsize':2})#len(train)})
         wandb.key = PARAM_DICT['input']['key']
         wandb.dataset =   PARAM_DICT['input']['dataset']
         wandb.epochs = PARAM_DICT['input']['epochs']

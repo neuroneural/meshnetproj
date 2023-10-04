@@ -9,12 +9,13 @@ class wandb_class():
         self.key = key
         self.epochs = epochs
         self.dataset = dataset
+        self.url = ''
     
     def env(self):
         os.environ["WANDB_API_KEY"] = self.key
 
     def conf(self):
-        wandb.init(
+        self.url=wandb.init(
             project=self.architecture,
             config={
             "learning_rate": 0.02,
@@ -23,6 +24,7 @@ class wandb_class():
             "epochs": self.epochs,
             }
         )
+
 
     def log(self,log_name, log_value):
         wandb.log({log_name:log_value})

@@ -27,8 +27,10 @@ def remote_1(args):
     with open(os.path.join(args["state"]["outputDirectory"]+ os.sep +'input.json'),'w')as fp:
         json.dump(args, fp)
     temp = []
+    URL = []
     for site in input:
         temp.append(input[site]["value"])
+        URL.append(input[site]["project_url"])
     try:
       gradients = []
       for site in input:
@@ -39,11 +41,12 @@ def remote_1(args):
       aggregated_grad = [array.tolist() for array in aggregated_grad]
     except Exception as e:
         print(e)
-      
+    URL = list(set(URL))
     if input[site]['epochs']>input[site]['iteration']:
       if input[site]['datasetsize']>input[site]['datsetiteration']:
         computation_output = {
         "output": {
+            'PROJECT_URL':','.join(URL),
             'iteration':input[site]['iteration'],
             'epochs':input[site]['epochs'],
             "datasetsize":input[site]['datasetsize'],
@@ -51,12 +54,14 @@ def remote_1(args):
             'value':(sum(temp) / len(temp))+1,
             "computation_phase": 'remote_1',
             "validate":0,
-            "gradients":aggregated_grad
+            "gradients":aggregated_grad,
+
             }
             }
       else:
         computation_output = {
         "output": {
+            'PROJECT_URL':','.join(URL),
             'iteration':input[site]['iteration']+1,
             'epochs':input[site]['epochs'],
             "datasetsize":input[site]['datasetsize'],
@@ -70,6 +75,7 @@ def remote_1(args):
     else:
       computation_output = {
         "output": {
+            'PROJECT_URL':','.join(URL),
             'iteration':input[site]['iteration'],
             'epochs':input[site]['epochs'],
             "datasetsize":input[site]['datasetsize'],
