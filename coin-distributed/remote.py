@@ -28,8 +28,12 @@ def remote_1(args):
         json.dump(args, fp)
     temp = []
     URL = []
+    datasets = []
+    epochs = []
     for site in input:
         temp.append(input[site]["value"])
+        datasets.append(input[site]["datasetsize"])
+        epochs.append(input[site]["epochs"])
         URL.append(input[site]["project_url"])
     try:
       gradients = []
@@ -48,8 +52,8 @@ def remote_1(args):
         "output": {
             'PROJECT_URL':','.join(URL),
             'iteration':input[site]['iteration'],
-            'epochs':input[site]['epochs'],
-            "datasetsize":input[site]['datasetsize'],
+            'epochs':min(epochs),
+            "datasetsize":min(datasets),
             "datsetiteration":input[site]['datsetiteration']+1,
             'value':(sum(temp) / len(temp))+1,
             "computation_phase": 'remote_1',
@@ -63,8 +67,8 @@ def remote_1(args):
         "output": {
             'PROJECT_URL':','.join(URL),
             'iteration':input[site]['iteration']+1,
-            'epochs':input[site]['epochs'],
-            "datasetsize":input[site]['datasetsize'],
+            'epochs':min(epochs),
+            "datasetsize":min(datasets),
             "datsetiteration":0,
             'value':(sum(temp) / len(temp))+1,
             "computation_phase": 'remote_1',
@@ -77,8 +81,8 @@ def remote_1(args):
         "output": {
             'PROJECT_URL':','.join(URL),
             'iteration':input[site]['iteration'],
-            'epochs':input[site]['epochs'],
-            "datasetsize":input[site]['datasetsize'],
+            'epochs':min(epochs),
+            "datasetsize":min(datasets),
             "datsetiteration":input[site]['datsetiteration'],
             'value':(sum(temp) / len(temp)),
             "computation_phase": 'remote_2',

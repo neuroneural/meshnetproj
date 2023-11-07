@@ -1,7 +1,24 @@
-
 import inspect
 import logging
 import torch
+
+
+import requests
+import os
+
+
+def download_model(URL,path):
+    file_path = os.path.join(path, 'models.py')
+    # Make an HTTP GET request to the file URL
+    response = requests.get(URL)
+    if response.status_code == 200:
+        # If the request is successful, save the content to the specified folder
+        with open(file_path, 'wb') as file:
+            file.write(response.content)
+        print(f'File downloaded to: {file_path}')
+    else:
+        print(f'Failed to download the file. Status code: {response.status_code}')
+
 
 class trainer():
     def __init__(self, model, criterion, optimizer):

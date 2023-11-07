@@ -3,12 +3,13 @@ import wandb
 
 
 class wandb_class():
-    def __init__(self,project, architecture, key, epochs, dataset):
+    def __init__(self,project, architecture, key, epochs, dataset,lr):
         self.project = project
         self.architecture = architecture
         self.key = key
         self.epochs = epochs
         self.dataset = dataset
+        self.lr = lr
         self.url = ''
     
     def env(self):

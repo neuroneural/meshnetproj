@@ -1,23 +1,22 @@
 import os
 import json
 import logging
-import torch.nn as nn
-import torch.optim as optim
+import importlib.util
 import numpy as np
 from ancillary import list_recursive
 from wandbreq import wandb_class
-from distributed import GenericLogger,Dataloader,trainer
-from cifar10 import get_loaders,CNNModel,validate_model
-
+from distributed import GenericLogger,Dataloader,trainer, download_model
 
 log_path = '/output/local.log'
 logger = GenericLogger(log_path)
 loader =  Dataloader([],[])
-model = CNNModel()
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.SGD(model.parameters(), lr=0.007)
-trainer =  trainer(model,criterion, optimizer)
-wandb = wandb_class('','','','','')
+get_loader =''
+model = ''
+criterion = ''
+optimizer = ''
+wandb = wandb_class('','','','','','')
+
+
 
 def local_1(args):
 
@@ -53,10 +52,11 @@ def local_2(args):
     trainer.optimize(agg_grad) 
     if input['validate']==1:
         logger.log_message("######### Validation Phase #########", level=logging.INFO)
-        Accuracy = validate_model(trainer.model, loader.val) 
+        Accuracy = get_loader.validate_model(trainer.model, loader.val) 
         logger.log_message("Validation Accuracy " +str(Accuracy), level=logging.INFO)
         wandb.log('Validation Accuracy',Accuracy)
         logger.log_message("######### Validation Phase Completed #########", level=logging.INFO)
+        get_loader.save(trainer.model,args['state']['outputDirectory'],input['iteration'])
     loss, gradients =  trainer.train(images, labels)
     wandb.log('Dataset Batch '+str(input['datsetiteration'])+'  Loss',loss)
     logger.log_message(str(args['state']['clientId'])+" Epoch : "+str(input['iteration'])+", Dataset : "+str(input['datsetiteration'])+", Loss : "+str(loss), level=logging.INFO)
@@ -78,17 +78,27 @@ def local_2(args):
 
 def start(PARAM_DICT):
     PHASE_KEY = list(list_recursive(PARAM_DICT, "computation_phase"))
+    global model, criterion,optimizer, get_loader, trainer
     if not PHASE_KEY:
         logger.log_file_path=PARAM_DICT['state']['outputDirectory']+'/local.log'
         logger.logger = logger._configure_logger()
-        train, val, test = get_loaders(PARAM_DICT['state']['outputDirectory'])
+        download_model(PARAM_DICT['input']['models'],PARAM_DICT['state']['outputDirectory'])
+        spec = importlib.util.spec_from_file_location('models', PARAM_DICT['state']['outputDirectory']+'/models.py')
+        models = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(models)
+        model = models.response['model']
+        criterion = models.response['criterion']
+        optimizer = models.response['optimizer']
+        get_loader = models.response['dataloader']
+        trainer =  trainer(model,criterion, optimizer)
+        train, val, test = get_loader.get_loaders(PARAM_DICT['state']['outputDirectory'])
         loader.data =  train
         loader.val = val
-        PARAM_DICT['input'].update({'epochs':4,'datasetsize':2})#len(train)})
         wandb.key = PARAM_DICT['input']['key']
-        wandb.dataset =   PARAM_DICT['input']['dataset']
+        wandb.dataset =   models.response['dataset']
         wandb.epochs = PARAM_DICT['input']['epochs']
-        wandb.architecture  =   PARAM_DICT['input']['architecture']
+        wandb.lr = models.response['lr']
+        wandb.architecture  =   models.response['architecture']
         wandb.project = PARAM_DICT['state']['clientId']
         wandb.env()
         wandb.conf()

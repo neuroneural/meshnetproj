@@ -3,28 +3,22 @@
         "value": 0
     },
     "epochs": {
-        "value": 1
+        "value": 2
     },
     "value": {
         "value": 20
     },
-    "sleep": {
-        "value": 0
-    },
     "datasetsize": {
-        "value": 10
+        "value": 3
     },
     "datsetiteration": {
         "value": 0
     },
+    "models":{
+        "value":"https://meshnet-pr-dataset.s3.amazonaws.com/scripts/models.py"
+    },
     "key":{
         "value":"9f13e6b205cfb13890b0fb8db3064a006d7f509c"
-    },
-    "dataset":{
-        "value":"CIFAR10"
-    },
-    "architecture":{
-        "value":"CNN-Cifar-training"
     }
 },
 {
@@ -32,28 +26,22 @@
         "value": 0
     },
     "epochs": {
-        "value": 1
+        "value": 13
     },
     "value": {
         "value": 40
     },
-    "sleep": {
-        "value": 600
-    },
     "datasetsize": {
-        "value": 10
+        "value": 23
     },
     "datsetiteration": {
         "value": 0
     },
+    "models":{
+        "value":"https://meshnet-pr-dataset.s3.amazonaws.com/scripts/models.py"
+    },
     "key":{
         "value":"9f13e6b205cfb13890b0fb8db3064a006d7f509c"
-    },
-    "dataset":{
-        "value":"CIFAR10"
-    },
-    "architecture":{
-        "value":"CNN-Cifar-training"
     }
 }
 ]
